@@ -3,13 +3,11 @@ use std::str::FromStr;
 
 use std::error::Error;
 
-use clap::ValueHint;
-
 use crate::common::alpha2_to_country;
 
 use super::address::Address;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct NF_Z10_011 {
     pub lines: [String; 7],
 }
@@ -72,6 +70,15 @@ mod tests {
 
     #[test]
     fn test_from_french_individual_example1() {
+        let result = Address {
+            name: "Monsieur Jean DURAND".to_string().into(),
+            street_name: "25D RUE DES FLEURS".to_string().into(),
+            post_code: "33500".to_string(),
+            town_name: "LIBOURNE".to_string(),
+            country: "FR".to_string(),
+            ..Default::default()
+        };
+
         let nf_address = NF_Z10_011 {
             lines: [
                 "Monsieur Jean DURAND".to_string(),
@@ -80,33 +87,27 @@ mod tests {
                 "25D RUE DES FLEURS".to_string(),
                 "".to_string(),
                 "33500 LIBOURNE".to_string(),
-                "France".to_string(),
+                "FRANCE".to_string(),
             ],
         };
-
-        let result = Address {
-            name: "Monsieur Jean DURAND".to_string().into(),
-            department: None,
-            sub_department: None,
-            street_name: "25D RUE DES FLEURS".to_string().into(),
-            building_number: None,
-            building_name: None,
-            floor: None,
-            post_box: None,
-            room: None,
-            post_code: "33500".to_string(),
-            town_name: "LIBOURNE".to_string(),
-            town_location_name: None,
-            district_name: None,
-            country_sub_division: None,
-            country: "FR".to_string(),
-        };
-        let addr: Address = nf_address.try_into().expect("error");
-
-        assert_eq!(addr, result);
+        let addr: NF_Z10_011 = result.try_into().expect("error");
+        assert_eq!(addr, nf_address);
     }
+
     #[test]
     fn test_from_french_individual_example2() {
+        let result = Address {
+            name: "Monsieur Jean DELHOURME".to_string().into(),
+            street_name: "25 RUE DE L’EGLISE".to_string().into(),
+            floor: "Entrée A Bâtiment Jonquille".to_string().into(),
+            room: "Chez Mireille COPEAU Appartement 2".to_string().into(),
+            post_code: "33380".to_string(),
+            town_name: "MIOS".to_string(),
+            town_location_name: "CAUDOS".to_string().into(),
+            country: "FR".to_string(),
+            ..Default::default()
+        };
+
         let nf_address = NF_Z10_011 {
             lines: [
                 "Monsieur Jean DELHOURME".to_string(),
@@ -119,30 +120,22 @@ mod tests {
             ],
         };
 
-        let result = Address {
-            name: "Monsieur Jean DELHOURME".to_string().into(),
-            department: None,
-            sub_department: None,
-            street_name: "25 RUE DE L’EGLISE".to_string().into(),
-            building_number: None,
-            building_name: None,
-            floor: "Entrée A Bâtiment Jonquille".to_string().into(),
-            post_box: None,
-            room: "Chez Mireille COPEAU Appartement 2".to_string().into(),
-            post_code: "33380".to_string(),
-            town_name: "MIOS".to_string(),
-            town_location_name: "CAUDOS".to_string().into(),
-            district_name: None,
-            country_sub_division: None,
-            country: "FR".to_string(),
-        };
-        let addr: Address = nf_address.try_into().expect("error");
-
-        assert_eq!(addr, result);
+        let addr: NF_Z10_011 = result.try_into().expect("error");
+        assert_eq!(addr, nf_address);
     }
 
     #[test]
     fn test_from_french_individual_example3_v1() {
+        let result = Address {
+            name: "Madame Isabelle RICHARD".to_string().into(),
+            street_name: "VILLA BEAU SOLEIL".to_string().into(),
+            post_code: "82500".to_string(),
+            town_name: "AUTERIVE".to_string(),
+            town_location_name: "LE VILLAGE".to_string().into(),
+            country: "FR".to_string(),
+            ..Default::default()
+        };
+
         let nf_address = NF_Z10_011 {
             lines: [
                 "Madame Isabelle RICHARD".to_string(),
@@ -155,30 +148,22 @@ mod tests {
             ],
         };
 
-        let result = Address {
-            name: "Madame Isabelle RICHARD".to_string().into(),
-            department: None,
-            sub_department: None,
-            street_name: "VILLA BEAU SOLEIL".to_string().into(),
-            building_number: None,
-            building_name: None,
-            floor: None,
-            post_box: None,
-            room: None,
-            post_code: "82500".to_string(),
-            town_name: "AUTERIVE".to_string(),
-            town_location_name: "LE VILLAGE".to_string().into(),
-            district_name: None,
-            country_sub_division: None,
-            country: "FR".to_string(),
-        };
-        let addr: Address = nf_address.try_into().expect("error");
-
-        assert_eq!(addr, result);
+        let addr: NF_Z10_011 = result.try_into().expect("error");
+        assert_eq!(addr, nf_address);
     }
 
     #[test]
     fn test_from_french_individual_example3_v2() {
+        let result = Address {
+            name: "Madame Isabelle RICHARD".to_string().into(),
+            floor: "VILLA BEAU SOLEIL".to_string().into(),
+            post_code: "82500".to_string(),
+            town_name: "AUTERIVE".to_string(),
+            town_location_name: "LE VILLAGE".to_string().into(),
+            country: "FR".to_string(),
+            ..Default::default()
+        };
+
         let nf_address = NF_Z10_011 {
             lines: [
                 "Madame Isabelle RICHARD".to_string(),
@@ -191,25 +176,7 @@ mod tests {
             ],
         };
 
-        let result = Address {
-            name: "Madame Isabelle RICHARD".to_string().into(),
-            department: None,
-            sub_department: None,
-            street_name: None,
-            building_number: None,
-            building_name: None,
-            floor: "VILLA BEAU SOLEIL".to_string().into(),
-            post_box: None,
-            room: None,
-            post_code: "82500".to_string(),
-            town_name: "AUTERIVE".to_string(),
-            town_location_name: "LE VILLAGE".to_string().into(),
-            district_name: None,
-            country_sub_division: None,
-            country: "FR".to_string(),
-        };
-        let addr: Address = nf_address.try_into().expect("error");
-
-        assert_eq!(addr, result);
+        let addr: NF_Z10_011 = result.try_into().expect("error");
+        assert_eq!(addr, nf_address);
     }
 }

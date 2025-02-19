@@ -5,7 +5,8 @@ use serde_xml_rs;
 use std::error::Error;
 use std::str::FromStr;
 
-use super::address_nf_z10_01::NF_Z10_011;
+use super::address::Address;
+
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename = "PstlAdr")]
 // serde rename struct
@@ -40,17 +41,6 @@ pub struct ISO_20022 {
     pub Ctry: String,
 }
 
-impl TryFrom<NF_Z10_011> for ISO_20022 {
-    type Error = ();
-
-    fn try_from(value: NF_Z10_011) -> Result<Self, Self::Error> {
-        Ok(ISO_20022 {
-            Dept: value.lines[0].clone(),
-            ..ISO_20022::default()
-        })
-    }
-}
-
 impl FromStr for ISO_20022 {
     type Err = Box<dyn Error>;
 
@@ -59,6 +49,28 @@ impl FromStr for ISO_20022 {
     }
 }
 
+impl TryFrom<Address> for ISO_20022 {
+    type Error = Box<dyn Error>;
+
+    fn try_from(value: Address) -> Result<Self, Self::Error> {
+        Ok(ISO_20022 {
+            Dept: value.department.unwrap_or_default(),
+            SubDept: value.sub_department.unwrap_or_default(),
+            StrtNm: value.street_name.unwrap_or_default(),
+            BldgNb: value.building_number.unwrap_or_default(),
+            BldgNm: value.building_name.unwrap_or_default(),
+            Flr: value.floor.unwrap_or_default(),
+            PstBx: value.post_box.unwrap_or_default(),
+            Room: value.room.unwrap_or_default(),
+            PstCd: value.post_code,
+            TwnNm: value.town_name,
+            TwnLctnNm: value.town_location_name.unwrap_or_default(),
+            DstrctNm: value.district_name.unwrap_or_default(),
+            CtrySubDvsn: value.country_sub_division.unwrap_or_default(),
+            Ctry: value.country,
+        })
+    }
+}
 #[cfg(test)]
 mod tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.

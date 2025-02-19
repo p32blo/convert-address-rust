@@ -9,9 +9,9 @@ pub fn country_to_alpha2(country: &str) -> &str {
 
 pub fn alpha2_to_country(alpha2: &str) -> &str {
     match alpha2.to_uppercase().as_ref() {
-        "FR" => "France",
-        "PT" => "Portugal",
-        "DE" => "Germany",
+        "FR" => "FRANCE",
+        "PT" => "PORTUGAL",
+        "DE" => "GERMANY",
         _ => todo!(),
     }
 }

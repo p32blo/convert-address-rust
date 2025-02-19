@@ -18,11 +18,11 @@ struct Cli {
 enum Commands {
     /// Save a new address
     Save {
+        name: String,
         street: String,
-        postal_code: String,
+        post_code: String,
         city: String,
         country: String,
-        building_number: Option<String>,
     },
 
     /// List all saved addresses
@@ -38,21 +38,20 @@ fn main() {
 
     match cli.command {
         Commands::Save {
+            name,
             street,
-            building_number,
-            postal_code,
+            post_code,
             city,
             country,
         } => {
-            let address = Address::default();
-            //  {
-            //     street,
-            //     building_number,
-            //     postal_code,
-            //     city,
-            //     country,
-            //     subdivision: None,
-            // };
+            let address = Address {
+                name: name.into(),
+                street_name: street.into(),
+                post_code,
+                town_name: city,
+                country,
+                ..Default::default()
+            };
             let id = repository.save(address).expect("Error Saving");
             println!("Address saved at `{}`!", id);
         }

@@ -102,20 +102,11 @@ mod tests {
 
         let result = Address {
             name: "Monsieur Jean DURAND".to_string().into(),
-            department: None,
-            sub_department: None,
             street_name: "25D RUE DES FLEURS".to_string().into(),
-            building_number: None,
-            building_name: None,
-            floor: None,
-            post_box: None,
-            room: None,
             post_code: "33500".to_string(),
             town_name: "LIBOURNE".to_string(),
-            town_location_name: None,
-            district_name: None,
-            country_sub_division: None,
             country: "FR".to_string(),
+            ..Default::default()
         };
         let addr: Address = nf_address.try_into().expect("error");
 
@@ -137,20 +128,14 @@ mod tests {
 
         let result = Address {
             name: "Monsieur Jean DELHOURME".to_string().into(),
-            department: None,
-            sub_department: None,
             street_name: "25 RUE DE L’EGLISE".to_string().into(),
-            building_number: None,
-            building_name: None,
             floor: "Entrée A Bâtiment Jonquille".to_string().into(),
-            post_box: None,
             room: "Chez Mireille COPEAU Appartement 2".to_string().into(),
             post_code: "33380".to_string(),
             town_name: "MIOS".to_string(),
             town_location_name: "CAUDOS".to_string().into(),
-            district_name: None,
-            country_sub_division: None,
             country: "FR".to_string(),
+            ..Default::default()
         };
         let addr: Address = nf_address.try_into().expect("error");
 
@@ -173,20 +158,12 @@ mod tests {
 
         let result = Address {
             name: "Madame Isabelle RICHARD".to_string().into(),
-            department: None,
-            sub_department: None,
             street_name: "VILLA BEAU SOLEIL".to_string().into(),
-            building_number: None,
-            building_name: None,
-            floor: None,
-            post_box: None,
-            room: None,
             post_code: "82500".to_string(),
             town_name: "AUTERIVE".to_string(),
             town_location_name: "LE VILLAGE".to_string().into(),
-            district_name: None,
-            country_sub_division: None,
             country: "FR".to_string(),
+            ..Default::default()
         };
         let addr: Address = nf_address.try_into().expect("error");
 
@@ -209,20 +186,12 @@ mod tests {
 
         let result = Address {
             name: "Madame Isabelle RICHARD".to_string().into(),
-            department: None,
-            sub_department: None,
-            street_name: None,
-            building_number: None,
-            building_name: None,
             floor: "VILLA BEAU SOLEIL".to_string().into(),
-            post_box: None,
-            room: None,
             post_code: "82500".to_string(),
             town_name: "AUTERIVE".to_string(),
             town_location_name: "LE VILLAGE".to_string().into(),
-            district_name: None,
-            country_sub_division: None,
             country: "FR".to_string(),
+            ..Default::default()
         };
         let addr: Address = nf_address.try_into().expect("error");
 

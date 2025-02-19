@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
+use super::address_repository::AddressRepository;
 use super::address_repository::Result;
 use crate::models::address::Address;
+use std::collections::hash_map::Entry::Occupied;
 use uuid::Uuid;
-
-use super::address_repository::AddressRepository;
 
 #[derive(Debug, Default)]
 pub struct InMemoryRepository {
@@ -25,19 +25,19 @@ impl AddressRepository for InMemoryRepository {
     }
 
     fn update(&mut self, id: Uuid, new_address: Address) -> Result<()> {
-        if self.storage.contains_key(&id) {
-            self.storage.insert(id, new_address);
-            Ok(())
-        } else {
-            Err("Address not found".into())
+        match self.storage.entry(id) {
+            Occupied(mut e) => {
+                e.insert(new_address);
+                Ok(())
+            }
+            _ => Err("Address not found".into()),
         }
     }
 
     fn delete(&mut self, id: Uuid) -> Result<()> {
-        if self.storage.remove(&id).is_some() {
-            Ok(())
-        } else {
-            Err("Address not found".into())
+        match self.storage.remove(&id) {
+            Some(_) => Ok(()),
+            _ => Err("Address not found".into()),
         }
     }
 

@@ -1,12 +1,12 @@
+use super::address_repository::AddressRepository;
 use super::address_repository::Result;
 use crate::models::address::Address;
 use serde_json;
+use std::collections::hash_map::Entry::Occupied;
 use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use uuid::Uuid;
-
-use super::address_repository::AddressRepository;
 
 const FILE_PATH: &str = "addresses.json";
 
@@ -56,20 +56,20 @@ impl AddressRepository for JsonFileRepository {
 
     fn update(&mut self, id: Uuid, new_address: Address) -> Result<()> {
         let mut storage = Self::read();
-        if storage.contains_key(&id) {
-            storage.insert(id, new_address);
-            Self::write(&storage)
-        } else {
-            Err("Address not found".into())
+        match storage.entry(id) {
+            Occupied(mut e) => {
+                e.insert(new_address);
+                Self::write(&storage)
+            }
+            _ => Err("Address not found".into()),
         }
     }
 
     fn delete(&mut self, id: Uuid) -> Result<()> {
         let mut storage = Self::read();
-        if storage.remove(&id).is_some() {
-            Self::write(&storage)
-        } else {
-            Err("Address not found".into())
+        match storage.remove(&id) {
+            Some(_) => Self::write(&storage),
+            _ => Err("Address not found".into()),
         }
     }
 
