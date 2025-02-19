@@ -3,20 +3,6 @@ name = "address"
 version = "0.1.0"
 edition = "2021"
 
-[[main]]
-name = "address"
-path = "src/main.rs"
-
-
-[[bin]]
-name = "to-iso20022"
-path = "src/to-iso20022.rs"
-
-[[bin]]
-name = "from-iso20022"
-path = "src/from-iso20022.rs"
-
-
 [lints.rust]
 non_camel_case_types = { level = "allow", priority = 0 }
 non_snake_case = { level = "allow", priority = 0 }

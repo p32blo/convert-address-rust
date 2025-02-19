@@ -1,5 +1,5 @@
 pub fn country_to_alpha2(country: &str) -> &str {
-    match dbg!(country.to_uppercase().as_ref()) {
+    match country.to_uppercase().as_ref() {
         "FRANCE" => "FR",
         "PORTUGAL" => "PT",
         "GERMANY" => "DE",

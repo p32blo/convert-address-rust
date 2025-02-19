@@ -8,6 +8,7 @@ use address::{
 use clap::{Parser, Subcommand, ValueEnum};
 use quick_xml::se::Serializer;
 use serde::Serialize;
+use std::fs;
 use uuid::Uuid;
 
 /// CLI for managing postal addresses
@@ -80,6 +81,7 @@ enum Commands {
     Delete { id: Uuid },
     /// Convert between address formats
     Convert {
+        file: String,
         #[clap(long)]
         from: Format,
         #[clap(long)]
@@ -175,23 +177,7 @@ fn main() {
 
             let format = format.unwrap_or(Format::JSON);
 
-            let b = match format {
-                Format::JSON => serde_json::to_string_pretty(&address).expect("might fail"),
-                Format::ISO_20022 => {
-                    let data = TryInto::<ISO_20022>::try_into(address).expect("might fail");
-
-                    let mut buffer = String::new();
-                    let mut serializer = Serializer::new(&mut buffer);
-                    serializer.indent(' ', 4);
-                    data.serialize(serializer).expect("fail");
-
-                    buffer
-                }
-                Format::NF_Z10_011 => TryInto::<NF_Z10_011_Individual>::try_into(address)
-                    .expect("might fail")
-                    .lines
-                    .join("\n"),
-            };
+            let b = print_with_format(&address, format);
             println!("{}", b);
         }
         Commands::List => {
@@ -204,8 +190,46 @@ fn main() {
             println!("Address deleted!");
         }
 
-        Commands::Convert { from, to } => {
-            println!("Converting {:?} to {:?}", from, to);
+        Commands::Convert { file, from, to } => {
+            let content = fs::read_to_string(file).expect("it failed");
+
+            let from_parse: Address = {
+                match from {
+                    Format::JSON => serde_json::from_str(&content).expect("fail"),
+                    Format::ISO_20022 => quick_xml::de::from_str::<ISO_20022>(&content)
+                        .expect("fail")
+                        .try_into()
+                        .expect("error"),
+                    Format::NF_Z10_011 => content
+                        .parse::<NF_Z10_011_Individual>()
+                        .expect("fail")
+                        .try_into()
+                        .expect("error"),
+                }
+            };
+            let output = print_with_format(&from_parse, to);
+            println!("{}", output);
         }
+    }
+}
+
+fn print_with_format(address: &Address, format: Format) -> String {
+    let address = address.clone();
+    match format {
+        Format::JSON => serde_json::to_string_pretty(&address).expect("might fail"),
+        Format::ISO_20022 => {
+            let data = ISO_20022::try_from(address).expect("might fail");
+
+            let mut buffer = String::new();
+            let mut serializer = Serializer::new(&mut buffer);
+            serializer.indent(' ', 4);
+            data.serialize(serializer).expect("fail");
+
+            buffer
+        }
+        Format::NF_Z10_011 => NF_Z10_011_Individual::try_from(address)
+            .expect("might fail")
+            .lines
+            .join("\n"),
     }
 }
