@@ -22,7 +22,7 @@ jobs:
       - name: Run tests
         run: cargo test --verbose
 
-  security_audit:
+  audit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -36,3 +36,18 @@ jobs:
 
       - name: Run cargo audit
         run: cargo audit
+
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Rustfmt
+        run: rustup component add rustfmt
+
+      - name: Check formatting
+        run: cargo fmt -- --check
