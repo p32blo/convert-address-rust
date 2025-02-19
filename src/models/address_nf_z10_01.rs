@@ -55,7 +55,9 @@ impl TryFrom<Address> for NF_Z10_011 {
                 value.floor.unwrap_or_default(),
                 value.street_name.unwrap_or_default(),
                 value.town_location_name.unwrap_or_default(),
-                format!("{} {}", value.post_code, value.town_name),
+                format!("{} {}", value.post_code, value.town_name)
+                    .trim()
+                    .to_string(),
                 country,
             ],
         })

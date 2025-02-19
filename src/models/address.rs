@@ -5,6 +5,7 @@ use crate::common::country_to_alpha2;
 
 use super::address_iso_20022::ISO_20022;
 use super::address_nf_z10_01::NF_Z10_011;
+use super::address_nf_z10_01_enterprise::NF_Z10_011_Enterprise;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
 pub struct Address {
@@ -56,6 +57,51 @@ impl TryFrom<NF_Z10_011> for Address {
     }
 }
 
+impl TryFrom<NF_Z10_011_Enterprise> for Address {
+    type Error = ();
+
+    fn try_from(value: NF_Z10_011_Enterprise) -> Result<Self, Self::Error> {
+        let optional = |x: &str| Some(x).filter(|x| !x.is_empty()).map(|x| x.to_string());
+
+        let name = optional(&value[1]);
+        let department = optional(&value[2]);
+        let floor = optional(&value[3]);
+        let street_name = optional(&value[4]);
+
+        let (post_box, town_location_name) = {
+            let parts: Vec<_> = value[5].splitn(3, ' ').collect();
+
+            match parts.as_slice() {
+                [first, second, rest @ ..] => (
+                    Some(format!("{} {}", first, second)),
+                    Some(rest.join(" ")).filter(|x| !x.is_empty()),
+                ),
+                _ => (None, None),
+            }
+        };
+
+        let (post_code, town_name) = value[6]
+            .split_once(' ')
+            .map(|(code, city)| (code.to_string(), city.to_string()))
+            .unwrap_or_default();
+        let country = country_to_alpha2(&value[7]).to_string();
+
+        Ok(Address {
+            name,
+            department,
+            street_name,
+            floor,
+            post_box,
+            country,
+            post_code,
+            town_name,
+            town_location_name,
+
+            ..Address::default()
+        })
+    }
+}
+
 impl TryFrom<ISO_20022> for Address {
     type Error = ();
 
@@ -82,6 +128,8 @@ impl TryFrom<ISO_20022> for Address {
 
 #[cfg(test)]
 mod tests {
+
+    use crate::models::address_nf_z10_01_enterprise::NF_Z10_011_Enterprise;
 
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
@@ -193,8 +241,72 @@ mod tests {
             country: "FR".to_string(),
             ..Default::default()
         };
-        let addr: Address = nf_address.try_into().expect("error");
 
+        let addr: Address = nf_address.try_into().expect("error");
+        assert_eq!(addr, result);
+    }
+
+    #[test]
+    fn test_from_french_enterprise_example1() {
+        let nf_address = NF_Z10_011_Enterprise {
+            lines: [
+                "DURAND SA".to_string(),
+                "Service achat".to_string(),
+                "Zone industrielle de la Ballastrierre Ouest".to_string(),
+                "22BIS RUE DES FLEURS".to_string(),
+                "BP 40122".to_string(),
+                "33506 LIBOURNE CEDEX".to_string(),
+                "FRANCE".to_string(),
+            ],
+        };
+
+        let result = Address {
+            name: "DURAND SA".to_string().into(),
+            department: "Service achat".to_string().into(),
+            street_name: "22BIS RUE DES FLEURS".to_string().into(),
+            floor: "Zone industrielle de la Ballastrierre Ouest"
+                .to_string()
+                .into(),
+            post_box: "BP 40122".to_string().into(),
+            post_code: "33506".to_string().into(),
+            town_name: "LIBOURNE CEDEX".to_string().into(),
+            country: "FR".to_string().into(),
+            ..Default::default()
+        };
+
+        let addr: Address = nf_address.try_into().expect("error");
+        assert_eq!(addr, result);
+    }
+
+    #[test]
+    fn test_from_french_enterprise_example2() {
+        let nf_address = NF_Z10_011_Enterprise {
+            lines: [
+                "Société DUPONT".to_string(),
+                "Mademoiselle Lucie MARTIN".to_string(),
+                "Résidence des Capucins Bâtiment Quater".to_string(),
+                "56 RUE EMILE ZOLA".to_string(),
+                "BP 90432 MONTFERRIER SUR LEZ".to_string(),
+                "34092 MONTPELLIER CEDEX 5".to_string(),
+                "FRANCE".to_string(),
+            ],
+        };
+
+        let result = Address {
+            name: "Société DUPONT".to_string().into(),
+            department: "Mademoiselle Lucie MARTIN".to_string().into(),
+            street_name: "56 RUE EMILE ZOLA".to_string().into(),
+            floor: "Résidence des Capucins Bâtiment Quater".to_string().into(),
+            post_box: "BP 90432".to_string().into(),
+            post_code: "34092".to_string().into(),
+            town_name: "MONTPELLIER CEDEX 5".to_string(),
+            town_location_name: "MONTFERRIER SUR LEZ".to_string().into(),
+            country: "FR".to_string(),
+
+            ..Default::default()
+        };
+
+        let addr: Address = nf_address.try_into().expect("error");
         assert_eq!(addr, result);
     }
 }
