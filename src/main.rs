@@ -1,6 +1,6 @@
 use address::{
     models::address::Address,
-    models::address_nf_z10_01::NF_Z10_011,
+    models::address_nf_z10_01_individual::NF_Z10_011_Individual,
     repositories::{address_repository::AddressRepository, json_repository::JsonFileRepository},
 };
 use clap::{Parser, Subcommand};
@@ -99,7 +99,7 @@ fn main() {
             repository.update(id, data.clone()).expect("Error Saving");
             println!(
                 "Address saved!\n{}",
-                TryInto::<NF_Z10_011>::try_into(data)
+                TryInto::<NF_Z10_011_Individual>::try_into(data)
                     .expect("might fail")
                     .lines
                     .join("\n")

@@ -1,4 +1,4 @@
 pub mod address;
 pub mod address_iso_20022;
-pub mod address_nf_z10_01;
 pub mod address_nf_z10_01_enterprise;
+pub mod address_nf_z10_01_individual;

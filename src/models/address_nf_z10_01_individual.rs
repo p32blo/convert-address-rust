@@ -8,11 +8,11 @@ use crate::common::alpha2_to_country;
 use super::address::Address;
 
 #[derive(Debug, Default, PartialEq)]
-pub struct NF_Z10_011 {
+pub struct NF_Z10_011_Individual {
     pub lines: [String; 7],
 }
 
-impl Index<u8> for NF_Z10_011 {
+impl Index<u8> for NF_Z10_011_Individual {
     type Output = str;
 
     fn index(&self, index: u8) -> &Self::Output {
@@ -23,11 +23,11 @@ impl Index<u8> for NF_Z10_011 {
     }
 }
 
-impl FromStr for NF_Z10_011 {
+impl FromStr for NF_Z10_011_Individual {
     type Err = Box<dyn Error>;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut res = NF_Z10_011::default();
+        let mut res = NF_Z10_011_Individual::default();
 
         let lines: Vec<String> = s.lines().map(|x| x.to_string()).collect();
 
@@ -43,12 +43,12 @@ impl FromStr for NF_Z10_011 {
     }
 }
 
-impl TryFrom<Address> for NF_Z10_011 {
+impl TryFrom<Address> for NF_Z10_011_Individual {
     type Error = Box<dyn Error>;
 
     fn try_from(value: Address) -> Result<Self, Self::Error> {
         let country = alpha2_to_country(&value.country).to_string();
-        Ok(NF_Z10_011 {
+        Ok(NF_Z10_011_Individual {
             lines: [
                 value.name.unwrap_or_default(),
                 value.room.unwrap_or_default(),
@@ -81,7 +81,7 @@ mod tests {
             ..Default::default()
         };
 
-        let nf_address = NF_Z10_011 {
+        let nf_address = NF_Z10_011_Individual {
             lines: [
                 "Monsieur Jean DURAND".to_string(),
                 "".to_string(),
@@ -92,7 +92,7 @@ mod tests {
                 "FRANCE".to_string(),
             ],
         };
-        let addr: NF_Z10_011 = result.try_into().expect("error");
+        let addr: NF_Z10_011_Individual = result.try_into().expect("error");
         assert_eq!(addr, nf_address);
     }
 
@@ -110,7 +110,7 @@ mod tests {
             ..Default::default()
         };
 
-        let nf_address = NF_Z10_011 {
+        let nf_address = NF_Z10_011_Individual {
             lines: [
                 "Monsieur Jean DELHOURME".to_string(),
                 "Chez Mireille COPEAU Appartement 2".to_string(),
@@ -122,7 +122,7 @@ mod tests {
             ],
         };
 
-        let addr: NF_Z10_011 = result.try_into().expect("error");
+        let addr: NF_Z10_011_Individual = result.try_into().expect("error");
         assert_eq!(addr, nf_address);
     }
 
@@ -138,7 +138,7 @@ mod tests {
             ..Default::default()
         };
 
-        let nf_address = NF_Z10_011 {
+        let nf_address = NF_Z10_011_Individual {
             lines: [
                 "Madame Isabelle RICHARD".to_string(),
                 "".to_string(),
@@ -150,7 +150,7 @@ mod tests {
             ],
         };
 
-        let addr: NF_Z10_011 = result.try_into().expect("error");
+        let addr: NF_Z10_011_Individual = result.try_into().expect("error");
         assert_eq!(addr, nf_address);
     }
 
@@ -166,7 +166,7 @@ mod tests {
             ..Default::default()
         };
 
-        let nf_address = NF_Z10_011 {
+        let nf_address = NF_Z10_011_Individual {
             lines: [
                 "Madame Isabelle RICHARD".to_string(),
                 "".to_string(),
@@ -178,7 +178,7 @@ mod tests {
             ],
         };
 
-        let addr: NF_Z10_011 = result.try_into().expect("error");
+        let addr: NF_Z10_011_Individual = result.try_into().expect("error");
         assert_eq!(addr, nf_address);
     }
 }

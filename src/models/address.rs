@@ -4,8 +4,8 @@ use serde::Serialize;
 use crate::common::country_to_alpha2;
 
 use super::address_iso_20022::ISO_20022;
-use super::address_nf_z10_01::NF_Z10_011;
 use super::address_nf_z10_01_enterprise::NF_Z10_011_Enterprise;
+use super::address_nf_z10_01_individual::NF_Z10_011_Individual;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
 pub struct Address {
@@ -26,10 +26,10 @@ pub struct Address {
     pub country: String,
 }
 
-impl TryFrom<NF_Z10_011> for Address {
+impl TryFrom<NF_Z10_011_Individual> for Address {
     type Error = ();
 
-    fn try_from(value: NF_Z10_011) -> Result<Self, Self::Error> {
+    fn try_from(value: NF_Z10_011_Individual) -> Result<Self, Self::Error> {
         let optional = |x: &str| Some(x).filter(|x| !x.is_empty()).map(|x| x.to_string());
 
         let name = optional(&value[1]);
@@ -136,7 +136,7 @@ mod tests {
 
     #[test]
     fn test_from_french_individual_example1() {
-        let nf_address = NF_Z10_011 {
+        let nf_address = NF_Z10_011_Individual {
             lines: [
                 "Monsieur Jean DURAND".to_string(),
                 "".to_string(),
@@ -162,7 +162,7 @@ mod tests {
     }
     #[test]
     fn test_from_french_individual_example2() {
-        let nf_address = NF_Z10_011 {
+        let nf_address = NF_Z10_011_Individual {
             lines: [
                 "Monsieur Jean DELHOURME".to_string(),
                 "Chez Mireille COPEAU Appartement 2".to_string(),
@@ -192,7 +192,7 @@ mod tests {
 
     #[test]
     fn test_from_french_individual_example3_v1() {
-        let nf_address = NF_Z10_011 {
+        let nf_address = NF_Z10_011_Individual {
             lines: [
                 "Madame Isabelle RICHARD".to_string(),
                 "".to_string(),
@@ -220,7 +220,7 @@ mod tests {
 
     #[test]
     fn test_from_french_individual_example3_v2() {
-        let nf_address = NF_Z10_011 {
+        let nf_address = NF_Z10_011_Individual {
             lines: [
                 "Madame Isabelle RICHARD".to_string(),
                 "".to_string(),
