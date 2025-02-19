@@ -78,26 +78,51 @@ mod tests {
 
     #[test]
     fn test_parse() {
-        let content = r#"
+        let content = r#"<?xml version="1.0" encoding="UTF-8"?>
             <PstlAdr>
                 <Dept></Dept>
-                <SubDept></SubDept>,
-                <StrtNm></StrtNm>,
-                <BldgNb></BldgNb>,
-                <BldgNm></BldgNm>,
+                <SubDept></SubDept>
+                <StrtNm>25D RUE DES FLEURS</StrtNm>
+                <BldgNb></BldgNb>
+                <BldgNm></BldgNm>
                 <Flr></Flr>,
-                <PstBx></PstBx>,
-                <Room></Room>,
-                <PstCd></PstCd>,
-                <TwnNm></TwnNm>,
-                <TwnLctnNm></TwnLctnNm>,
-                <DstrctNm></DstrctNm>,
-                <CtrySubDvsn></CtrySubDvsn>,
-                <Ctry></Ctry>,
+                <PstBx></PstBx>
+                <Room></Room>
+                <PstCd>33500</PstCd>
+                <TwnNm>LISBOURNE</TwnNm>
+                <TwnLctnNm></TwnLctnNm>
+                <DstrctNm></DstrctNm>
+                <CtrySubDvsn></CtrySubDvsn>
+                <Ctry>FR</Ctry>
             </PstlAdr>
         "#;
 
+        let result = ISO_20022 {
+            StrtNm: "25D RUE DES FLEURS".to_string().into(),
+            PstCd: "33500".to_string(),
+            TwnNm: "LISBOURNE".to_string(),
+            Ctry: "FR".to_string(),
+            ..Default::default()
+        };
+
         let parse: ISO_20022 = content.parse().expect("Cannot parse XML!");
-        assert_eq!(parse, ISO_20022::default());
+        assert_eq!(parse, result);
+    }
+
+    #[test]
+    fn test_xml() {
+        let content = r#"<?xml version="1.0" encoding="UTF-8"?><PstlAdr><Dept></Dept><SubDept></SubDept><StrtNm>25D RUE DES FLEURS</StrtNm><BldgNb></BldgNb><BldgNm></BldgNm><Flr></Flr><PstBx></PstBx><Room></Room><PstCd>33500</PstCd><TwnNm>LISBOURNE</TwnNm><TwnLctnNm></TwnLctnNm><DstrctNm></DstrctNm><CtrySubDvsn></CtrySubDvsn><Ctry>FR</Ctry></PstlAdr>"#;
+
+        let result = ISO_20022 {
+            StrtNm: "25D RUE DES FLEURS".to_string().into(),
+            PstCd: "33500".to_string(),
+            TwnNm: "LISBOURNE".to_string(),
+            Ctry: "FR".to_string(),
+            ..Default::default()
+        };
+
+        let xml = serde_xml_rs::to_string(&result).expect("Can Error");
+
+        assert_eq!(xml, content);
     }
 }

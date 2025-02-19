@@ -36,10 +36,10 @@ impl TryFrom<NF_Z10_011> for Address {
         let floor = optional(&value[3]);
         let street_name = optional(&value[4]);
         let town_location_name = optional(&value[5]);
-        let (post_code, town_name) = match value[6].split_once(' ') {
-            Some((code, city)) => (code.to_string(), city.to_string()),
-            _ => ("".to_string(), "".to_string()),
-        };
+        let (post_code, town_name) = value[6]
+            .split_once(' ')
+            .map(|(code, city)| (code.to_string(), city.to_string()))
+            .unwrap_or_default();
         let country = country_to_alpha2(&value[7]).to_string();
 
         Ok(Address {
