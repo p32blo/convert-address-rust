@@ -1,3 +1,4 @@
+use address::models::validate::Validate;
 use address::{
     models::{
         address::Address, address_iso_20022::ISO_20022,
@@ -11,7 +12,6 @@ use serde::Serialize;
 use std::error::Error;
 use std::fs;
 use uuid::Uuid;
-
 /// CLI for managing postal addresses
 #[derive(Parser)]
 #[command(name = "address-cli")]
@@ -87,6 +87,8 @@ enum Commands {
         from: Format,
         #[clap(long)]
         to: Format,
+        #[clap(long, action)]
+        validate: bool,
     },
 }
 
@@ -191,14 +193,31 @@ fn run_cli() -> Result<(), Box<dyn Error>> {
             println!("Address deleted!");
         }
 
-        Commands::Convert { file, from, to } => {
+        Commands::Convert {
+            file,
+            validate,
+            from,
+            to,
+        } => {
             let content = fs::read_to_string(file)?;
 
             let from_parse: Address = {
                 match from {
                     Format::Json => serde_json::from_str(&content)?,
-                    Format::Iso => quick_xml::de::from_str::<ISO_20022>(&content)?.try_into()?,
-                    Format::Nf => content.parse::<NF_Z10_011_Individual>()?.try_into()?,
+                    Format::Iso => {
+                        let iso = quick_xml::de::from_str::<ISO_20022>(&content)?;
+                        if validate {
+                            iso.validate()?;
+                        }
+                        iso.try_into()?
+                    }
+                    Format::Nf => {
+                        let nf = content.parse::<NF_Z10_011_Individual>()?;
+                        if validate {
+                            nf.validate()?;
+                        }
+                        nf.try_into()?
+                    }
                 }
             };
             let output = print_with_format(&from_parse, to)?;

@@ -3,13 +3,30 @@ use std::str::FromStr;
 
 use std::error::Error;
 
-use crate::common::alpha2_to_country;
+use crate::common::{alpha2_to_country, Result};
 
 use super::address::Address;
+use super::validate::Validate;
+
+const MAX_LENGTH: usize = 38;
 
 #[derive(Debug, Default, PartialEq)]
 pub struct NF_Z10_011_Individual {
     pub lines: [String; 7],
+}
+
+impl Validate for NF_Z10_011_Individual {
+    fn validate(&self) -> Result<()> {
+        for (i, line) in self.lines.iter().enumerate() {
+            if line.len() > MAX_LENGTH {
+                return Err(
+                    format!("Line {} must have less than {MAX_LENGTH} chars", i + 1).into(),
+                );
+            }
+        }
+
+        Ok(())
+    }
 }
 
 impl Index<u8> for NF_Z10_011_Individual {
@@ -26,7 +43,7 @@ impl Index<u8> for NF_Z10_011_Individual {
 impl FromStr for NF_Z10_011_Individual {
     type Err = Box<dyn Error>;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self> {
         let mut res = NF_Z10_011_Individual::default();
 
         let lines: Vec<String> = s.lines().map(|x| x.to_string()).collect();
@@ -46,7 +63,7 @@ impl FromStr for NF_Z10_011_Individual {
 impl TryFrom<Address> for NF_Z10_011_Individual {
     type Error = Box<dyn Error>;
 
-    fn try_from(value: Address) -> Result<Self, Self::Error> {
+    fn try_from(value: Address) -> Result<Self> {
         let country = alpha2_to_country(&value.country).to_string();
         Ok(NF_Z10_011_Individual {
             lines: [

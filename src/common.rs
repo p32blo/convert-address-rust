@@ -1,3 +1,7 @@
+use std::error::Error;
+
+pub type Result<T> = std::result::Result<T, Box<dyn Error>>;
+
 pub fn country_to_alpha2(country: &str) -> &str {
     match country.to_uppercase().as_ref() {
         "FRANCE" => "FR",

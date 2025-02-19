@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 
 use super::address_repository::AddressRepository;
-use super::address_repository::Result;
-use crate::models::address::Address;
+use crate::{common::Result, models::address::Address};
 use std::collections::hash_map::Entry::Occupied;
 use uuid::Uuid;
 

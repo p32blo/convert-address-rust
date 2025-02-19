@@ -1,5 +1,5 @@
 use super::address_repository::AddressRepository;
-use super::address_repository::Result;
+use crate::common::Result;
 use crate::models::address::Address;
 use serde_json;
 use std::collections::hash_map::Entry::Occupied;
