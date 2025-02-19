@@ -1,5 +1,7 @@
 # Home Assignment for payment backend engineer (Rust)
 
+![preview](docs/preview.gif)
+
 ## Overview
 
 You will build a cli that convert postal address formats and save them in local files (on a json file as a local database). The project should adhere to good architecture principles, ensuring modularity, maintainability, and the ability to extend the application with minimal effort.
