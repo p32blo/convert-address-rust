@@ -160,4 +160,18 @@ mod tests {
 
         assert_eq!(xml, content);
     }
+
+    #[test]
+    fn test_validate() {
+        let result = ISO_20022 {
+            StrtNm: "25D RUE DES FLEURS".to_string().into(),
+            PstCd: "XXXXXXXXXXXXXXXXXXXX".to_string(),
+            TwnNm: "LISBOURNE".to_string(),
+            Ctry: "FR".to_string(),
+            ..Default::default()
+        };
+
+        let invalid = result.validate();
+        assert!(invalid.is_err())
+    }
 }

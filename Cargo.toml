@@ -3,6 +3,11 @@ name = "address"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "address"
+path = "src/presenters/cli.rs"
+
+
 [lints.rust]
 non_camel_case_types = { level = "allow", priority = 0 }
 non_snake_case = { level = "allow", priority = 0 }
