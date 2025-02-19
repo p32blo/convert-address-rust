@@ -1,5 +1,7 @@
-use address::ISO_20022;
+use models::address_iso_20022::ISO_20022;
 
+mod models;
+mod repositories;
 fn main() {
     let args: Vec<String> = std::env::args().collect();
 

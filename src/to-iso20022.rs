@@ -1,5 +1,7 @@
-use address::{ISO_20022, NF_Z10_011};
+mod models;
+mod repositories;
 
+use models::{address_iso_20022::ISO_20022, address_nf_z10_01::NF_Z10_011};
 use serde_xml_rs::to_string;
 
 fn main() {
@@ -11,5 +13,4 @@ fn main() {
 
     let iso: ISO_20022 = nf.try_into().expect("This might fail");
     println!("{}", to_string(&iso).expect("Failed to convert"));
-    ()
 }
