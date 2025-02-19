@@ -1,8 +1,7 @@
 Monsieur Jean DELHOURME
-Chez Mireille COPEAU
-Appartement 2
+Chez Mireille COPEAU\nAppartement 2
 Entrée A Bâtiment Jonquille
 25 RUE DE L’EGLISE
 CAUDOS
 33380 MIOS
-FRANCE
+France

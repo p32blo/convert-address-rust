@@ -1,11 +1,11 @@
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::common::country_to_alpha2;
-
 use super::address_iso_20022::ISO_20022;
 use super::address_nf_z10_01_enterprise::NF_Z10_011_Enterprise;
 use super::address_nf_z10_01_individual::NF_Z10_011_Individual;
+use crate::common::country_to_alpha2;
+use std::error::Error;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
 pub struct Address {
@@ -27,7 +27,7 @@ pub struct Address {
 }
 
 impl TryFrom<NF_Z10_011_Individual> for Address {
-    type Error = ();
+    type Error = Box<dyn Error>;
 
     fn try_from(value: NF_Z10_011_Individual) -> Result<Self, Self::Error> {
         let optional = |x: &str| Some(x).filter(|x| !x.is_empty()).map(|x| x.to_string());
@@ -58,7 +58,7 @@ impl TryFrom<NF_Z10_011_Individual> for Address {
 }
 
 impl TryFrom<NF_Z10_011_Enterprise> for Address {
-    type Error = ();
+    type Error = Box<dyn Error>;
 
     fn try_from(value: NF_Z10_011_Enterprise) -> Result<Self, Self::Error> {
         let optional = |x: &str| Some(x).filter(|x| !x.is_empty()).map(|x| x.to_string());
@@ -103,7 +103,7 @@ impl TryFrom<NF_Z10_011_Enterprise> for Address {
 }
 
 impl TryFrom<ISO_20022> for Address {
-    type Error = ();
+    type Error = Box<dyn Error>;
 
     fn try_from(value: ISO_20022) -> Result<Self, Self::Error> {
         Ok(Address {

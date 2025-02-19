@@ -8,6 +8,7 @@ use address::{
 use clap::{Parser, Subcommand, ValueEnum};
 use quick_xml::se::Serializer;
 use serde::Serialize;
+use std::error::Error;
 use std::fs;
 use uuid::Uuid;
 
@@ -91,11 +92,12 @@ enum Commands {
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 enum Format {
-    ISO_20022,
-    NF_Z10_011,
-    JSON,
+    Iso,
+    Nf,
+    Json,
 }
-fn main() {
+
+fn run_cli() -> Result<(), Box<dyn Error>> {
     let cli = Cli::parse();
     let mut repository = JsonFileRepository::new();
 
@@ -134,7 +136,7 @@ fn main() {
                 country_sub_division,
                 country,
             };
-            let id = repository.save(address).expect("Error Saving");
+            let id = repository.save(address)?;
             println!("Address saved at `{}`!", id);
         }
         Commands::Update {
@@ -145,7 +147,7 @@ fn main() {
             city,
             country,
         } => {
-            let mut data = repository.get(id).expect("This id does not exist");
+            let mut data = repository.get(id).ok_or("ID not Found")?;
 
             if name.is_some() {
                 data.name = name;
@@ -162,22 +164,21 @@ fn main() {
             if let Some(new_country) = country {
                 data.country = new_country;
             }
-            repository.update(id, data.clone()).expect("Error Saving");
+            repository.update(id, data.clone())?;
             println!(
                 "Address saved!\n{}",
-                TryInto::<NF_Z10_011_Individual>::try_into(data)
-                    .expect("might fail")
+                TryInto::<NF_Z10_011_Individual>::try_into(data)?
                     .lines
                     .join("\n")
             );
         }
 
         Commands::Get { id, format } => {
-            let address = repository.get(id).expect("does not exist");
+            let address = repository.get(id).ok_or("Address Not Found! ")?;
 
-            let format = format.unwrap_or(Format::JSON);
+            let format = format.unwrap_or(Format::Json);
 
-            let b = print_with_format(&address, format);
+            let b = print_with_format(&address, format)?;
             println!("{}", b);
         }
         Commands::List => {
@@ -191,45 +192,42 @@ fn main() {
         }
 
         Commands::Convert { file, from, to } => {
-            let content = fs::read_to_string(file).expect("it failed");
+            let content = fs::read_to_string(file)?;
 
             let from_parse: Address = {
                 match from {
-                    Format::JSON => serde_json::from_str(&content).expect("fail"),
-                    Format::ISO_20022 => quick_xml::de::from_str::<ISO_20022>(&content)
-                        .expect("fail")
-                        .try_into()
-                        .expect("error"),
-                    Format::NF_Z10_011 => content
-                        .parse::<NF_Z10_011_Individual>()
-                        .expect("fail")
-                        .try_into()
-                        .expect("error"),
+                    Format::Json => serde_json::from_str(&content)?,
+                    Format::Iso => quick_xml::de::from_str::<ISO_20022>(&content)?.try_into()?,
+                    Format::Nf => content.parse::<NF_Z10_011_Individual>()?.try_into()?,
                 }
             };
-            let output = print_with_format(&from_parse, to);
+            let output = print_with_format(&from_parse, to)?;
             println!("{}", output);
         }
     }
+    Ok(())
 }
 
-fn print_with_format(address: &Address, format: Format) -> String {
+fn main() {
+    if let Err(e) = run_cli() {
+        eprintln!("error: {}", e);
+    }
+}
+
+fn print_with_format(address: &Address, format: Format) -> Result<String, Box<dyn Error>> {
     let address = address.clone();
-    match format {
-        Format::JSON => serde_json::to_string_pretty(&address).expect("might fail"),
-        Format::ISO_20022 => {
-            let data = ISO_20022::try_from(address).expect("might fail");
+    Ok(match format {
+        Format::Json => serde_json::to_string_pretty(&address)?,
+        Format::Iso => {
+            let data = ISO_20022::try_from(address)?;
 
             let mut buffer = String::new();
             let mut serializer = Serializer::new(&mut buffer);
             serializer.indent(' ', 4);
-            data.serialize(serializer).expect("fail");
+            data.serialize(serializer)?;
 
             buffer
         }
-        Format::NF_Z10_011 => NF_Z10_011_Individual::try_from(address)
-            .expect("might fail")
-            .lines
-            .join("\n"),
-    }
+        Format::Nf => NF_Z10_011_Individual::try_from(address)?.lines.join("\n"),
+    })
 }

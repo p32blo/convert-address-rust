@@ -3,7 +3,7 @@ pub fn country_to_alpha2(country: &str) -> &str {
         "FRANCE" => "FR",
         "PORTUGAL" => "PT",
         "GERMANY" => "DE",
-        _ => todo!(),
+        _ => todo!("Implement more countries"),
     }
 }
 
@@ -12,6 +12,6 @@ pub fn alpha2_to_country(alpha2: &str) -> &str {
         "FR" => "FRANCE",
         "PT" => "PORTUGAL",
         "DE" => "GERMANY",
-        _ => todo!(),
+        _ => todo!("Implement more countries"),
     }
 }
