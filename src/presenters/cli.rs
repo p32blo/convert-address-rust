@@ -24,7 +24,7 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Save a new address
+    /// Add a new address
     Add {
         #[clap(long)]
         name: Option<String>,
@@ -92,6 +92,17 @@ enum Commands {
         country: Option<String>,
         #[clap(long)]
         format: Option<Format>,
+    },
+    /// Add a Address from an existing file
+    Save {
+        #[clap(long)]
+        file: String,
+        #[clap(long)]
+        from: Format,
+        #[clap(long, action)]
+        validate: bool,
+        #[clap(long, action)]
+        enterprise: bool,
     },
     /// Retrieve an Address by Id
     Get {
@@ -242,6 +253,18 @@ fn run_cli() -> Result<(), Box<dyn Error>> {
             let format = format.unwrap_or(Format::Json);
             let content = str_from_address(&data, format)?;
             println!("{}", content);
+        }
+
+        Commands::Save {
+            file,
+            from,
+            validate,
+            enterprise,
+        } => {
+            let content = fs::read_to_string(file)?;
+            let address = address_from_str(&content, from, validate, enterprise)?;
+            let id = repository.save(address)?;
+            println!("Address saved at `{}`!", id);
         }
 
         Commands::Get { id, format } => {
