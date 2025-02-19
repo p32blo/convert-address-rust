@@ -1,9 +1,9 @@
-use address::models::address_nf_z10_01_enterprise::NF_Z10_011_Enterprise;
+use address::models::address_nf_z10_011_enterprise::NF_Z10_011_Enterprise;
 use address::models::validate::Validate;
 use address::{
     models::{
         address::Address, address_iso_20022::ISO_20022,
-        address_nf_z10_01_individual::NF_Z10_011_Individual,
+        address_nf_z10_011_individual::NF_Z10_011_Individual,
     },
     repositories::{address_repository::AddressRepository, json_repository::JsonFileRepository},
 };
@@ -90,6 +90,8 @@ enum Commands {
         country_sub_division: Option<String>,
         #[clap(long)]
         country: Option<String>,
+        #[clap(long)]
+        format: Option<Format>,
     },
     /// Retrieve an Address by Id
     Get {
@@ -103,6 +105,7 @@ enum Commands {
     Delete { id: Uuid },
     /// Convert between address formats
     Convert {
+        #[clap(long)]
         file: String,
         #[clap(long)]
         from: Format,
@@ -184,6 +187,7 @@ fn run_cli() -> Result<(), Box<dyn Error>> {
             district_name,
             country_sub_division,
             country,
+            format,
         } => {
             let mut data = repository.get(id).ok_or("ID not Found")?;
 
@@ -235,12 +239,9 @@ fn run_cli() -> Result<(), Box<dyn Error>> {
 
             repository.update(id, data.clone())?;
 
-            println!(
-                "Address saved!\n{}",
-                TryInto::<NF_Z10_011_Individual>::try_into(data)?
-                    .lines
-                    .join("\n")
-            );
+            let format = format.unwrap_or(Format::Json);
+            let content = str_from_address(&data, format)?;
+            println!("{}", content);
         }
 
         Commands::Get { id, format } => {

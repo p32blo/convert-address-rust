@@ -2,8 +2,8 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use super::address_iso_20022::ISO_20022;
-use super::address_nf_z10_01_enterprise::NF_Z10_011_Enterprise;
-use super::address_nf_z10_01_individual::NF_Z10_011_Individual;
+use super::address_nf_z10_011_enterprise::NF_Z10_011_Enterprise;
+use super::address_nf_z10_011_individual::NF_Z10_011_Individual;
 use crate::common::country_to_alpha2;
 use std::error::Error;
 
@@ -129,7 +129,7 @@ impl TryFrom<ISO_20022> for Address {
 #[cfg(test)]
 mod tests {
 
-    use crate::models::address_nf_z10_01_enterprise::NF_Z10_011_Enterprise;
+    use crate::models::address_nf_z10_011_enterprise::NF_Z10_011_Enterprise;
 
     use super::*;
 

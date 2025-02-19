@@ -108,7 +108,6 @@ impl TryFrom<Address> for ISO_20022 {
 mod tests {
     use quick_xml::se::to_string;
 
-    // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
 
     #[test]
