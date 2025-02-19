@@ -1,6 +1,7 @@
 use models::address::Address;
 use repositories::{
     address_repository::AddressRepository, in_memory_repository::InMemoryRepository,
+    json_repository::JsonFileRepository,
 };
 
 mod models;
@@ -38,7 +39,7 @@ enum Commands {
 
 fn main() {
     let cli = Cli::parse();
-    let mut repository = InMemoryRepository::new();
+    let mut repository = JsonFileRepository::new();
 
     match cli.command {
         Commands::Save {
