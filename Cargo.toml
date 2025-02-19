@@ -1,0 +1,14 @@
+[package]
+name = "address"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "to-iso20022"
+path = "src/to-iso20022.rs"
+
+[[bin]]
+name = "from-iso20022"
+path = "src/from-iso20022.rs"
+
+[dependencies]
