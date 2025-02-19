@@ -13,6 +13,7 @@ pub struct Address {
     pub sub_department: Option<String>,
     pub street_name: Option<String>,
     pub building_number: Option<String>,
+    pub building_name: Option<String>,
     pub floor: Option<String>,
     pub post_box: Option<String>,
     pub room: Option<String>,
@@ -61,18 +62,19 @@ impl TryFrom<ISO_20022> for Address {
     fn try_from(value: ISO_20022) -> Result<Self, Self::Error> {
         Ok(Address {
             name: None,
-            department: Some(value.Dept),
-            sub_department: Some(value.SubDept),
-            street_name: Some(value.StrtNm),
-            building_number: Some(value.BldgNb),
-            floor: Some(value.Flr),
-            post_box: Some(value.PstBx),
-            room: Some(value.Room),
+            department: value.Dept.into(),
+            sub_department: value.SubDept.into(),
+            street_name: value.StrtNm.into(),
+            building_number: value.BldgNb.into(),
+            building_name: value.BldgNm.into(),
+            floor: value.Flr.into(),
+            post_box: value.PstBx.into(),
+            room: value.Room.into(),
             post_code: value.PstCd,
             town_name: value.TwnNm,
-            town_location_name: Some(value.TwnLctnNm),
-            district_name: Some(value.DstrctNm),
-            country_sub_division: Some(value.CtrySubDvsn),
+            town_location_name: value.TwnLctnNm.into(),
+            district_name: value.DstrctNm.into(),
+            country_sub_division: value.CtrySubDvsn.into(),
             country: value.Ctry,
         })
     }
@@ -85,7 +87,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_from_french_example1() {
+    fn test_from_french_individual_example1() {
         let nf_address = NF_Z10_011 {
             lines: [
                 "Monsieur Jean DURAND".to_string(),
@@ -99,11 +101,12 @@ mod tests {
         };
 
         let result = Address {
-            name: Some("Monsieur Jean DURAND".to_string()),
+            name: "Monsieur Jean DURAND".to_string().into(),
             department: None,
             sub_department: None,
-            street_name: Some("25D RUE DES FLEURS".to_string()),
+            street_name: "25D RUE DES FLEURS".to_string().into(),
             building_number: None,
+            building_name: None,
             floor: None,
             post_box: None,
             room: None,
@@ -119,7 +122,7 @@ mod tests {
         assert_eq!(addr, result);
     }
     #[test]
-    fn test_from_french_example2() {
+    fn test_from_french_individual_example2() {
         let nf_address = NF_Z10_011 {
             lines: [
                 "Monsieur Jean DELHOURME".to_string(),
@@ -133,17 +136,18 @@ mod tests {
         };
 
         let result = Address {
-            name: Some("Monsieur Jean DELHOURME".to_string()),
+            name: "Monsieur Jean DELHOURME".to_string().into(),
             department: None,
             sub_department: None,
-            street_name: Some("25 RUE DE L’EGLISE".to_string()),
+            street_name: "25 RUE DE L’EGLISE".to_string().into(),
             building_number: None,
-            floor: Some("Entrée A Bâtiment Jonquille".to_string()),
+            building_name: None,
+            floor: "Entrée A Bâtiment Jonquille".to_string().into(),
             post_box: None,
-            room: Some("Chez Mireille COPEAU Appartement 2".to_string()),
+            room: "Chez Mireille COPEAU Appartement 2".to_string().into(),
             post_code: "33380".to_string(),
             town_name: "MIOS".to_string(),
-            town_location_name: Some("CAUDOS".to_string()),
+            town_location_name: "CAUDOS".to_string().into(),
             district_name: None,
             country_sub_division: None,
             country: "FR".to_string(),
@@ -154,7 +158,7 @@ mod tests {
     }
 
     #[test]
-    fn test_from_french_example3_v1() {
+    fn test_from_french_individual_example3_v1() {
         let nf_address = NF_Z10_011 {
             lines: [
                 "Madame Isabelle RICHARD".to_string(),
@@ -168,17 +172,18 @@ mod tests {
         };
 
         let result = Address {
-            name: Some("Madame Isabelle RICHARD".to_string()),
+            name: "Madame Isabelle RICHARD".to_string().into(),
             department: None,
             sub_department: None,
-            street_name: Some("VILLA BEAU SOLEIL".to_string()),
+            street_name: "VILLA BEAU SOLEIL".to_string().into(),
             building_number: None,
+            building_name: None,
             floor: None,
             post_box: None,
             room: None,
             post_code: "82500".to_string(),
             town_name: "AUTERIVE".to_string(),
-            town_location_name: Some("LE VILLAGE".to_string()),
+            town_location_name: "LE VILLAGE".to_string().into(),
             district_name: None,
             country_sub_division: None,
             country: "FR".to_string(),
@@ -189,7 +194,7 @@ mod tests {
     }
 
     #[test]
-    fn test_from_french_example3_v2() {
+    fn test_from_french_individual_example3_v2() {
         let nf_address = NF_Z10_011 {
             lines: [
                 "Madame Isabelle RICHARD".to_string(),
@@ -203,17 +208,18 @@ mod tests {
         };
 
         let result = Address {
-            name: Some("Madame Isabelle RICHARD".to_string()),
+            name: "Madame Isabelle RICHARD".to_string().into(),
             department: None,
             sub_department: None,
             street_name: None,
             building_number: None,
-            floor: Some("VILLA BEAU SOLEIL".to_string()),
+            building_name: None,
+            floor: "VILLA BEAU SOLEIL".to_string().into(),
             post_box: None,
             room: None,
             post_code: "82500".to_string(),
             town_name: "AUTERIVE".to_string(),
-            town_location_name: Some("LE VILLAGE".to_string()),
+            town_location_name: "LE VILLAGE".to_string().into(),
             district_name: None,
             country_sub_division: None,
             country: "FR".to_string(),
