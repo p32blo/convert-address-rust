@@ -7,6 +7,7 @@ use std::str::FromStr;
 
 use super::address_nf_z10_01::NF_Z10_011;
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
+#[serde(rename = "PstlAdr")]
 // serde rename struct
 pub struct ISO_20022 {
     /// Department
@@ -17,6 +18,8 @@ pub struct ISO_20022 {
     pub StrtNm: String,
     /// BUilding Number
     pub BldgNb: String,
+    /// Building Name
+    pub BldgNm: String,
     /// Floor
     pub Flr: String,
     /// Post Box
@@ -64,11 +67,12 @@ mod tests {
     #[test]
     fn test_parse() {
         let content = r#"
-            <ISO_20022>
+            <PstlAdr>
                 <Dept></Dept>
                 <SubDept></SubDept>,
                 <StrtNm></StrtNm>,
                 <BldgNb></BldgNb>,
+                <BldgNm></BldgNm>,
                 <Flr></Flr>,
                 <PstBx></PstBx>,
                 <Room></Room>,
@@ -78,7 +82,7 @@ mod tests {
                 <DstrctNm></DstrctNm>,
                 <CtrySubDvsn></CtrySubDvsn>,
                 <Ctry></Ctry>,
-            </ISO_20022>
+            </PstlAdr>
         "#;
 
         let parse: ISO_20022 = content.parse().expect("Cannot parse XML!");
