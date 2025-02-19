@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [[main]]
-name = "main"
+name = "address"
 path = "src/main.rs"
 
 
@@ -22,6 +22,7 @@ non_camel_case_types = { level = "allow", priority = 0 }
 non_snake_case = { level = "allow", priority = 0 }
 
 [dependencies]
+clap = { version = "4.5.30", features = ["derive"] }
 serde = { version = "1.0.217", features = ["derive"] }
 serde-xml-rs = "0.6.0"
 uuid = { version = "1.13.2", features = ["v4"] }

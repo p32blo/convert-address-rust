@@ -17,7 +17,7 @@ pub struct Address {
 impl TryFrom<NF_Z10_011> for Address {
     type Error = ();
 
-    fn try_from(value: NF_Z10_011) -> Result<Self, Self::Error> {
+    fn try_from(_value: NF_Z10_011) -> Result<Self, Self::Error> {
         todo!()
     }
 }
@@ -25,7 +25,7 @@ impl TryFrom<NF_Z10_011> for Address {
 impl TryFrom<ISO_20022> for Address {
     type Error = ();
 
-    fn try_from(value: ISO_20022) -> Result<Self, Self::Error> {
+    fn try_from(_value: ISO_20022) -> Result<Self, Self::Error> {
         todo!()
     }
 }
