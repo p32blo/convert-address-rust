@@ -66,8 +66,6 @@ impl TryFrom<Address> for NF_Z10_011_Individual {
 
 #[cfg(test)]
 mod tests {
-
-    // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
 
     #[test]

@@ -131,7 +131,6 @@ mod tests {
 
     use crate::models::address_nf_z10_01_enterprise::NF_Z10_011_Enterprise;
 
-    // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
 
     #[test]

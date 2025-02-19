@@ -2,7 +2,7 @@ use address::models::{
     address::Address, address_iso_20022::ISO_20022,
     address_nf_z10_01_individual::NF_Z10_011_Individual,
 };
-use serde_xml_rs::to_string;
+use quick_xml::se::to_string;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();

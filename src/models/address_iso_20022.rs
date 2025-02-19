@@ -1,7 +1,6 @@
 use serde::Deserialize;
 use serde::Serialize;
 
-use serde_xml_rs;
 use std::error::Error;
 use std::str::FromStr;
 
@@ -45,7 +44,7 @@ impl FromStr for ISO_20022 {
     type Err = Box<dyn Error>;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        serde_xml_rs::from_str(s).map_err(|e| Box::new(e) as Box<dyn Error>)
+        quick_xml::de::from_str(s).map_err(|e| Box::new(e) as Box<dyn Error>)
     }
 }
 
@@ -73,6 +72,8 @@ impl TryFrom<Address> for ISO_20022 {
 }
 #[cfg(test)]
 mod tests {
+    use quick_xml::se::to_string;
+
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
 
@@ -111,7 +112,7 @@ mod tests {
 
     #[test]
     fn test_xml() {
-        let content = r#"<?xml version="1.0" encoding="UTF-8"?><PstlAdr><Dept></Dept><SubDept></SubDept><StrtNm>25D RUE DES FLEURS</StrtNm><BldgNb></BldgNb><BldgNm></BldgNm><Flr></Flr><PstBx></PstBx><Room></Room><PstCd>33500</PstCd><TwnNm>LISBOURNE</TwnNm><TwnLctnNm></TwnLctnNm><DstrctNm></DstrctNm><CtrySubDvsn></CtrySubDvsn><Ctry>FR</Ctry></PstlAdr>"#;
+        let content = r#"<PstlAdr><Dept/><SubDept/><StrtNm>25D RUE DES FLEURS</StrtNm><BldgNb/><BldgNm/><Flr/><PstBx/><Room/><PstCd>33500</PstCd><TwnNm>LISBOURNE</TwnNm><TwnLctnNm/><DstrctNm/><CtrySubDvsn/><Ctry>FR</Ctry></PstlAdr>"#;
 
         let result = ISO_20022 {
             StrtNm: "25D RUE DES FLEURS".to_string().into(),
@@ -121,7 +122,7 @@ mod tests {
             ..Default::default()
         };
 
-        let xml = serde_xml_rs::to_string(&result).expect("Can Error");
+        let xml = to_string(&result).expect("Can Error");
 
         assert_eq!(xml, content);
     }

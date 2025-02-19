@@ -1,9 +1,13 @@
 use address::{
-    models::address::Address,
-    models::address_nf_z10_01_individual::NF_Z10_011_Individual,
+    models::{
+        address::Address, address_iso_20022::ISO_20022,
+        address_nf_z10_01_individual::NF_Z10_011_Individual,
+    },
     repositories::{address_repository::AddressRepository, json_repository::JsonFileRepository},
 };
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
+use quick_xml::se::Serializer;
+use serde::Serialize;
 use uuid::Uuid;
 
 /// CLI for managing postal addresses
@@ -18,11 +22,36 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     /// Save a new address
-    Save {
-        name: String,
-        street: String,
+    Add {
+        #[clap(long)]
+        name: Option<String>,
+        #[clap(long)]
+        department: Option<String>,
+        #[clap(long)]
+        sub_department: Option<String>,
+        #[clap(long)]
+        street_name: Option<String>,
+        #[clap(long)]
+        building_number: Option<String>,
+        #[clap(long)]
+        building_name: Option<String>,
+        #[clap(long)]
+        floor: Option<String>,
+        #[clap(long)]
+        post_box: Option<String>,
+        #[clap(long)]
+        room: Option<String>,
+        #[clap(long)]
         post_code: String,
-        city: String,
+        #[clap(long)]
+        town_name: String,
+        #[clap(long)]
+        town_location_name: Option<String>,
+        #[clap(long)]
+        district_name: Option<String>,
+        #[clap(long)]
+        country_sub_division: Option<String>,
+        #[clap(long)]
         country: String,
     },
     /// Update a new address
@@ -40,33 +69,68 @@ enum Commands {
         country: Option<String>,
     },
     /// Retrieve an Address by Id
-    Get { id: Uuid },
+    Get {
+        id: Uuid,
+        #[clap(long)]
+        format: Option<Format>,
+    },
     /// List all saved addresses
     List,
-
     /// Delete an address
     Delete { id: Uuid },
+    /// Convert between address formats
+    Convert {
+        #[clap(long)]
+        from: Format,
+        #[clap(long)]
+        to: Format,
+    },
 }
 
+#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
+enum Format {
+    ISO_20022,
+    NF_Z10_011,
+    JSON,
+}
 fn main() {
     let cli = Cli::parse();
     let mut repository = JsonFileRepository::new();
 
     match cli.command {
-        Commands::Save {
+        Commands::Add {
             name,
-            street,
+            department,
+            sub_department,
+            street_name,
+            building_number,
+            building_name,
+            floor,
+            post_box,
+            room,
             post_code,
-            city,
+            town_name,
+            town_location_name,
+            district_name,
+            country_sub_division,
             country,
         } => {
             let address = Address {
-                name: name.into(),
-                street_name: street.into(),
+                name,
+                department,
+                sub_department,
+                street_name,
+                building_number,
+                building_name,
+                floor,
+                post_box,
+                room,
                 post_code,
-                town_name: city,
+                town_name,
+                town_location_name,
+                district_name,
+                country_sub_division,
                 country,
-                ..Default::default()
             };
             let id = repository.save(address).expect("Error Saving");
             println!("Address saved at `{}`!", id);
@@ -106,12 +170,29 @@ fn main() {
             );
         }
 
-        Commands::Get { id } => {
+        Commands::Get { id, format } => {
             let address = repository.get(id).expect("does not exist");
-            println!(
-                "{}",
-                serde_json::to_string_pretty(&address).expect("might fail")
-            );
+
+            let format = format.unwrap_or(Format::JSON);
+
+            let b = match format {
+                Format::JSON => serde_json::to_string_pretty(&address).expect("might fail"),
+                Format::ISO_20022 => {
+                    let data = TryInto::<ISO_20022>::try_into(address).expect("might fail");
+
+                    let mut buffer = String::new();
+                    let mut serializer = Serializer::new(&mut buffer);
+                    serializer.indent(' ', 4);
+                    data.serialize(serializer).expect("fail");
+
+                    buffer
+                }
+                Format::NF_Z10_011 => TryInto::<NF_Z10_011_Individual>::try_into(address)
+                    .expect("might fail")
+                    .lines
+                    .join("\n"),
+            };
+            println!("{}", b);
         }
         Commands::List => {
             let addresses = repository.list();
@@ -121,6 +202,10 @@ fn main() {
         Commands::Delete { id } => {
             let _ = repository.delete(id);
             println!("Address deleted!");
+        }
+
+        Commands::Convert { from, to } => {
+            println!("Converting {:?} to {:?}", from, to);
         }
     }
 }
