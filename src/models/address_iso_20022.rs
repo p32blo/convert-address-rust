@@ -9,19 +9,32 @@ use super::address_nf_z10_01::NF_Z10_011;
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
 // serde rename struct
 pub struct ISO_20022 {
-    Dept: String,
-    SubDept: String,
-    StrtNm: String,
-    BldgNb: String,
-    Flr: String,
-    PstBx: String,
-    Room: String,
-    PstCd: String,
-    TwnNm: String,
-    TwnLctnNm: String,
-    StrctNm: String,
-    CtrySubDvsn: String,
-    Ctry: String,
+    /// Department
+    pub Dept: String,
+    /// Sub Department
+    pub SubDept: String,
+    /// Street Name
+    pub StrtNm: String,
+    /// BUilding Number
+    pub BldgNb: String,
+    /// Floor
+    pub Flr: String,
+    /// Post Box
+    pub PstBx: String,
+    /// Room
+    pub Room: String,
+    /// Post Code
+    pub PstCd: String,
+    /// Town Name
+    pub TwnNm: String,
+    /// Town Location Name
+    pub TwnLctnNm: String,
+    /// District Name
+    pub DstrctNm: String,
+    /// Country Sub Division
+    pub CtrySubDvsn: String,
+    /// Country
+    pub Ctry: String,
 }
 
 impl TryFrom<NF_Z10_011> for ISO_20022 {
@@ -62,7 +75,7 @@ mod tests {
                 <PstCd></PstCd>,
                 <TwnNm></TwnNm>,
                 <TwnLctnNm></TwnLctnNm>,
-                <StrctNm></StrctNm>,
+                <DstrctNm></DstrctNm>,
                 <CtrySubDvsn></CtrySubDvsn>,
                 <Ctry></Ctry>,
             </ISO_20022>

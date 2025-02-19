@@ -1,7 +1,4 @@
-mod models;
-mod repositories;
-
-use models::{address_iso_20022::ISO_20022, address_nf_z10_01::NF_Z10_011};
+use address::models::{address_iso_20022::ISO_20022, address_nf_z10_01::NF_Z10_011};
 use serde_xml_rs::to_string;
 
 fn main() {

@@ -1,12 +1,7 @@
-use models::address::Address;
-use repositories::{
-    address_repository::AddressRepository, in_memory_repository::InMemoryRepository,
-    json_repository::JsonFileRepository,
+use address::{
+    models::address::Address,
+    repositories::{address_repository::AddressRepository, json_repository::JsonFileRepository},
 };
-
-mod models;
-mod repositories;
-
 use clap::{Parser, Subcommand};
 use uuid::Uuid;
 
@@ -49,14 +44,15 @@ fn main() {
             city,
             country,
         } => {
-            let address = Address {
-                street,
-                building_number,
-                postal_code,
-                city,
-                country,
-                subdivision: None,
-            };
+            let address = Address::default();
+            //  {
+            //     street,
+            //     building_number,
+            //     postal_code,
+            //     city,
+            //     country,
+            //     subdivision: None,
+            // };
             let id = repository.save(address).expect("Error Saving");
             println!("Address saved at `{}`!", id);
         }
