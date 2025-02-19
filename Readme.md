@@ -30,6 +30,7 @@ Usage: address <COMMAND>
 Commands:
   add      Save a new address
   update   Update a new address
+  save     Add a Address from an existing file
   get      Retrieve an Address by Id
   list     List all saved addresses
   delete   Delete an address
@@ -47,6 +48,16 @@ Options:
 ```sh
 ./address add --post-code "12345" --town-name "Paris" --country "FR" --street-name "La Vie" --name "Mademoiselle..."
 ```
+
+#### Add an Address from file
+
+```sh
+./address save --file examples/individual-example2.txt --from nf
+```
+
+Use the `--enterprise` flag to distinguish between Individual and Enterprise addresses.
+
+The `--validate` enables/disables the validation (field length for example) of the input address formats.
 
 #### Retrieve an Address
 
@@ -81,6 +92,8 @@ The `--format` arg allows to choose the output format. See Address Format Sectio
 ```sh
 ./address convert --file "examples/individual-example2.txt" --from nf --to iso --validate
 ```
+
+Use the `--enterprise` flag to distinguish between Individual and Enterprise addresses.
 
 The `--validate` enables/disables the validation (field length for example) of the input address formats.
 

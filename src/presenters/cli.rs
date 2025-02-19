@@ -179,7 +179,7 @@ fn run_cli() -> Result<(), Box<dyn Error>> {
                 country,
             };
             let id = repository.save(address)?;
-            println!("Address saved at `{}`!", id);
+            eprintln!("Address saved at `{}`!", id);
         }
         Commands::Update {
             id,
@@ -264,7 +264,7 @@ fn run_cli() -> Result<(), Box<dyn Error>> {
             let content = fs::read_to_string(file)?;
             let address = address_from_str(&content, from, validate, enterprise)?;
             let id = repository.save(address)?;
-            println!("Address saved at `{}`!", id);
+            eprintln!("Address saved at `{}`!", id);
         }
 
         Commands::Get { id, format } => {
@@ -276,13 +276,13 @@ fn run_cli() -> Result<(), Box<dyn Error>> {
             println!("{}", content);
         }
         Commands::List => {
-            let addresses = repository.list();
-            println!("{:?}", addresses);
+            let addresses = serde_json::to_string_pretty(&repository.list())?;
+            println!("{}", addresses);
         }
 
         Commands::Delete { id } => {
             let _ = repository.delete(id);
-            println!("Address deleted!");
+            eprintln!("Address deleted!");
         }
 
         Commands::Convert {
