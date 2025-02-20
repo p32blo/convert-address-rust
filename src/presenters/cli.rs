@@ -178,7 +178,7 @@ fn run_cli() -> Result<(), Box<dyn Error>> {
                 country_sub_division,
                 country,
             };
-            let id = repository.save(address)?;
+            let id = repository.save(&address)?;
             eprintln!("Address saved at `{}`!", id);
         }
         Commands::Update {
@@ -248,7 +248,7 @@ fn run_cli() -> Result<(), Box<dyn Error>> {
                 data.country = val;
             }
 
-            repository.update(id, data.clone())?;
+            repository.update(id, &data)?;
 
             let format = format.unwrap_or(Format::Json);
             let content = str_from_address(&data, format)?;
@@ -263,7 +263,7 @@ fn run_cli() -> Result<(), Box<dyn Error>> {
         } => {
             let content = fs::read_to_string(file)?;
             let address = address_from_str(&content, from, validate, enterprise)?;
-            let id = repository.save(address)?;
+            let id = repository.save(&address)?;
             eprintln!("Address saved at `{}`!", id);
         }
 
@@ -303,6 +303,9 @@ fn run_cli() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+///
+///  Parses an address from a given string and format.
+///
 fn address_from_str(
     content: &str,
     from: Format,
@@ -336,6 +339,9 @@ fn address_from_str(
     })
 }
 
+///
+///  Converts an address into a formatted string representation.
+///
 fn str_from_address(address: &Address, format: Format) -> Result<String, Box<dyn Error>> {
     let address = address.clone();
     Ok(match format {

@@ -5,47 +5,41 @@ use address::{
     },
 };
 
-fn get_test_addresses() -> Vec<Address> {
-    vec![
-        Address {
-            street_name: "RUE DES FLEURS".to_string().into(),
-            building_number: Some("25D".to_string()),
-            post_code: "33500".to_string(),
-            town_name: "Paris".to_string(),
-            country: "FR".to_string(),
-            ..Default::default()
-        },
-        Address {
-            street_name: "VILLA BEAU SOLEIL".to_string().into(),
-            building_number: Some("LE VILLAGE".to_string()),
-            post_code: "82500".to_string(),
-            town_name: "AUTERIVE".to_string(),
-            country: "FR".to_string(),
-            ..Default::default()
-        },
-    ]
-}
-
 #[test]
 fn test_repository() {
     let mut repo = InMemoryRepository::new();
 
-    let addrs = get_test_addresses();
+    let a1 = Address {
+        street_name: "RUE DES FLEURS".to_string().into(),
+        building_number: Some("25D".to_string()),
+        post_code: "33500".to_string(),
+        town_name: "Paris".to_string(),
+        country: "FR".to_string(),
+        ..Default::default()
+    };
+    let a2 = Address {
+        street_name: "VILLA BEAU SOLEIL".to_string().into(),
+        building_number: Some("LE VILLAGE".to_string()),
+        post_code: "82500".to_string(),
+        town_name: "AUTERIVE".to_string(),
+        country: "FR".to_string(),
+        ..Default::default()
+    };
 
     // Test Save
-    let id = repo.save(addrs[0].clone()).expect("failed to save");
+    let id = repo.save(&a1).expect("failed to save");
 
     // Test Get
     let found = repo.get(id);
-    assert_eq!(Some(&addrs[0]), found.as_ref());
+    assert_eq!(Some(&a1), found.as_ref());
 
     // Add another element
-    let id = repo.save(addrs[1].clone()).expect("failed to save");
+    let id = repo.save(&a2).expect("failed to save");
 
     // Test Delete
     repo.delete(id).expect("failed to delete");
 
     // test List
     let list = repo.list();
-    assert_eq!(vec![addrs[0].clone()], list);
+    assert_eq!(vec![a1], list);
 }
